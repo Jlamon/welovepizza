@@ -4,7 +4,7 @@ from dash import dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from file_uploaders import file_pizza_uploader, file_revenue_uploader
-from graph_makers import mean_day_maker, mean_week_maker
+from graph_makers import mean_per_day_maker, mean_week_maker
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -30,12 +30,14 @@ CONTENT_STYLE = {
 }
 
 def get_visuals():
-    visuals = [{'label': 'Moyenne par jour', 'value': 'mean_day'}, {'label': 'Moyenne par semaine', 'value': 'mean_week'}]
+    visuals = [{'label': 'Moyenne par semaine', 'value': 'mean_week'},
+               {'label': 'Moyenne par jours', 'value': 'mean_per_day'}]
     return visuals
 
 sidebar = html.Div(
     [
-        html.H2("We Love Pizza Dashboard", className="display-6"),
+        # html.H2("We Love Pizza Dashboard", className="display-6"),
+        html.H2("Tester", className="display-6"),
         html.Hr(),
         html.P('Pick a graphical representation below.'),
         dbc.Select(
@@ -89,10 +91,10 @@ def upload_pizza_file(file_content, filename):
 # Callback for graphs
 @app.callback(Output('graphs', 'figure'), [Input('visualselector', 'value')])
 def graph_maker(representation):
-    if representation == 'mean_day':
-        return mean_day_maker()
-    else:
+    if representation == 'mean_week':
         return mean_week_maker()
+    else:
+        return mean_per_day_maker()
 
 
 if __name__ == '__main__':

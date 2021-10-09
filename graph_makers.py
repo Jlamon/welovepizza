@@ -37,7 +37,7 @@ def mean_week_maker():
 
     fig = go.Figure([go.Bar(x=distribs, y=[avg_hsp, avg_gembloux, avg_total])])
     fig.update_layout(
-        title="Moyenne de pizzas vendues par semaine",
+        title="Moyenne vendues par semaine",
         xaxis_title="Distributeurs",
         yaxis_title="Moyenne",
         height=650
@@ -46,35 +46,46 @@ def mean_week_maker():
     return fig
 
 
-def mean_day_maker():
+def mean_per_day_maker():
     df = pd.read_csv('./data/user_pizzas.csv')
-    counter_hsp = 0
-    counter_gembloux = 0
-    counter_total = 0
-    total_hsp = 0
-    total_gembloux = 0
-    total = 0
+
+    weeks_hsp = {}
+    weeks_gembloux = {}
+    temp_hsp = 0
+    temp_gembloux = 0
 
     for index, row in df.iterrows():
+        date = datetime.strptime(row['Date'], '%d/%m/%Y')
+
         if 'Haine' in row['Distributeur']:
-            total_hsp += row['Total']
-            counter_hsp += 1
+            if date.weekday() in weeks_hsp.keys():
+                temp = weeks_hsp[date.weekday()]
+                weeks_hsp[date.weekday()] = temp + [row['Total']]
+            else:
+                weeks_hsp[date.weekday()] = [row['Total']]
         elif 'Gembloux' in row['Distributeur']:
-            total_gembloux += row['Total']
-            counter_gembloux += 1
-        elif 'Sélection' in row['Distributeur']:
-            total += row['Total']
-            counter_total += 1
+            if date.weekday() in weeks_gembloux.keys():
+                temp = weeks_gembloux[date.weekday()]
+                weeks_gembloux[date.weekday()] = temp + [row['Total']]
+            else:
+                weeks_gembloux[date.weekday()] = [row['Total']]
 
-    avg_hsp = total_hsp / counter_hsp
-    avg_gembloux = total_gembloux / counter_gembloux
-    avg_total = total / counter_total
-    distribs = ['Haine Saint Paul', 'Gembloux', 'Total']
+    avg_hsp = []
+    avg_gembloux = []
 
-    fig = go.Figure([go.Bar(x=distribs, y=[avg_hsp, avg_gembloux, avg_total])])
+    for key in weeks_hsp.keys():
+        temp = sum(weeks_hsp[key]) / len(weeks_hsp[key])
+        avg_hsp.append(temp)
+    for key in weeks_gembloux.keys():
+        temp = sum(weeks_gembloux[key]) / len(weeks_gembloux[key])
+        avg_gembloux.append(temp)
+
+    days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+
+    fig = go.Figure([go.Bar(x=days, y=avg_hsp)])
     fig.update_layout(
-        title="Moyenne de pizzas vendues par jour",
-        xaxis_title="Distributeurs",
+        title="Moyenne vendues par jour pour HSP seulement",
+        xaxis_title="Journées",
         yaxis_title="Moyenne",
         height=650
     )
