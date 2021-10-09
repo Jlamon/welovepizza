@@ -4,7 +4,7 @@ from dash import dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from file_uploaders import file_pizza_uploader, file_revenue_uploader
-from graph_makers import mean_per_day_maker, mean_week_maker
+from graph_makers import mean_per_day_maker, mean_week_maker, mean_per_pizza_gembloux, mean_per_pizza_hsp
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -31,19 +31,21 @@ CONTENT_STYLE = {
 
 def get_visuals():
     visuals = [{'label': 'Moyenne par semaine', 'value': 'mean_week'},
-               {'label': 'Moyenne par jours', 'value': 'mean_per_day'}]
+               {'label': 'Moyenne par jours', 'value': 'mean_per_day'},
+               {'label': 'Moyenne par pizzas Gembloux', 'value': 'mean_per_pizza_gembloux'},
+               {'label': 'Moyenne par pizzas HSP', 'value': 'mean_per_pizza_hsp'}]
     return visuals
 
 sidebar = html.Div(
     [
-        # html.H2("We Love Pizza Dashboard", className="display-6"),
-        html.H2("Tester", className="display-6"),
+        html.H2("We Love Pizza Dashboard", className="display-6"),
+        # html.H2("Tester", className="display-6"),
         html.Hr(),
         html.P('Pick a graphical representation below.'),
         dbc.Select(
             id='visualselector',
             options=get_visuals(),
-            value='mean_day',
+            value='mean_per_day',
             style={"margin-bottom": "10px"}
         ),
         dcc.Upload(
@@ -53,15 +55,7 @@ sidebar = html.Div(
                 html.Div(id='error_pizza_message')
             ])
         ),
-        # dcc.Upload(
-        #     id='upload-revenue',
-        #     children=html.Div([
-        #         dbc.Button("Upload Revenue File", id='upload-revenue-btn', outline=True, color="secondary", className="mr-1"),
-        #         html.Div(id='error_revenue_message')
-        #     ])
-        # ),
         html.Hr(),
-        # dbc.Button("Refresh the network", id='change-btn', outline=True, color="secondary", className="mr-1"),
         html.P('By Julien Lamon', style={"margin-top": "10px"})
     ],
     style=SIDEBAR_STYLE,
@@ -81,20 +75,17 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 def upload_pizza_file(file_content, filename):
     return file_pizza_uploader(file_content, filename)
 
-# Callback for revenue file uploader
-# @app.callback(Output('error_revenue_message', 'children'),
-#               [Input('upload-revenue', 'contents')],
-#               [State('upload-revenue', 'filename')])
-# def upload_revenue_file(file_content, filename):
-#     return file_revenue_uploader(file_content, filename)
-
 # Callback for graphs
 @app.callback(Output('graphs', 'figure'), [Input('visualselector', 'value')])
 def graph_maker(representation):
     if representation == 'mean_week':
         return mean_week_maker()
-    else:
+    elif representation == 'mean_per_day':
         return mean_per_day_maker()
+    elif representation == 'mean_per_pizza_gembloux':
+        return mean_per_pizza_gembloux()
+    else:
+        return mean_per_pizza_hsp()
 
 
 if __name__ == '__main__':

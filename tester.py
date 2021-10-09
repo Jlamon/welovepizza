@@ -6,36 +6,34 @@ if __name__ == '__main__':
     df_filtered = df.drop(['test', 'du jour', 'test mano', 'Unnamed: 16', 'Unnamed: 17'], axis=1)
     df_only = df_filtered.drop(['Froides', 'Invendues'], axis=1)
 
-    weeks_hsp = {}
-    weeks_gembloux = {}
-    temp_hsp = 0
-    temp_gembloux = 0
+    weeks_hsp = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}
+    weeks_gembloux = {0: {}, 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}
+
+    pizzas = ['Merguez', 'Transalpine', 'Chèvre Miel', 'Reine', '3 Fromages', 'Marguerita', 'Poulet oignons', 'Légumes grillés']
+
+    for key in weeks_hsp.keys():
+        for pizz in pizzas:
+            weeks_hsp[key][pizz] = []
+            weeks_gembloux[key][pizz] = []
 
     for index, row in df.iterrows():
         date = datetime.strptime(row['Date'], '%d/%m/%Y')
+        day = date.weekday()
 
         if 'Haine' in row['Distributeur']:
-            if date.weekday() in weeks_hsp.keys():
-                temp = weeks_hsp[date.weekday()]
-                weeks_hsp[date.weekday()] = temp + [row['Total']]
-            else:
-                weeks_hsp[date.weekday()] = [row['Total']]
+            for pizz in pizzas:
+                weeks_hsp[day][pizz].append(row[pizz])
         elif 'Gembloux' in row['Distributeur']:
-            if date.weekday() in weeks_gembloux.keys():
-                temp = weeks_gembloux[date.weekday()]
-                weeks_gembloux[date.weekday()] = temp + [row['Total']]
-            else:
-                weeks_gembloux[date.weekday()] = [row['Total']]
-
-    avg_hsp = []
-    avg_gembloux = []
+            for pizz in pizzas:
+                weeks_gembloux[day][pizz].append(row[pizz])
 
     for key in weeks_hsp.keys():
-        temp = sum(weeks_hsp[key]) / len(weeks_hsp[key])
-        avg_hsp.append(temp)
-    for key in weeks_gembloux.keys():
-        temp = sum(weeks_gembloux[key]) / len(weeks_gembloux[key])
-        avg_gembloux.append(temp)
+        for pizz in pizzas:
+            temp_hsp = weeks_hsp[key][pizz]
+            temp_gem = weeks_gembloux[key][pizz]
 
-    print(avg_hsp, len(avg_hsp))
-    print(avg_gembloux, len(avg_gembloux))
+            weeks_hsp[key][pizz] = sum(temp_hsp) / len(temp_hsp)
+            weeks_gembloux[key][pizz] = sum(temp_gem) / len(temp_gem)
+
+    print(weeks_hsp)
+    print(weeks_gembloux)
