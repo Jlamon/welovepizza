@@ -3,7 +3,7 @@ from dash import html
 from dash import dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-from file_uploaders import file_pizza_uploader, file_revenue_uploader
+from file_uploaders import file_pizza_uploader
 from graph_makers import mean_per_day_maker, mean_week_maker, mean_per_pizza_gembloux, mean_per_pizza_hsp
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -89,4 +89,4 @@ def graph_maker(representation):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
