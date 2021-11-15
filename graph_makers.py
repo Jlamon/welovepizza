@@ -163,8 +163,9 @@ def mean_per_pizza_gembloux():
 
     fig = go.Figure(data=[
         go.Table(
-            header=dict(values=list(table.columns)),
-            cells=dict(values=[table[column] for column in table])
+            header=dict(values=["<b>" + column for column in table]),
+            cells=dict(values=[table[column] for column in table],
+                       height=30)
         )
     ])
 
@@ -210,8 +211,9 @@ def mean_per_pizza_hsp():
 
     fig = go.Figure(data=[
         go.Table(
-            header=dict(values=list(table.columns)),
-            cells=dict(values=[table[column] for column in table])
+            header=dict(values=["<b>" + column for column in table]),
+            cells=dict(values=[table[column] for column in table],
+                       height=30)
         )
     ])
 
