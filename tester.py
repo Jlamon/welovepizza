@@ -30,6 +30,8 @@ if __name__ == '__main__':
             weeks_gembloux[key][pizza] = math.ceil(mean_gem)
 
     test = pd.DataFrame.from_dict(weeks_gembloux)
-    test1 = test.rename({0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"}, axis=1)
+    test = test.reset_index()
+    test = test.rename({"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
+                       axis=1)
 
-    print(test1)
+    print(test.columns)
