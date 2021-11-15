@@ -4,7 +4,7 @@ from dash import dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from file_uploaders import file_pizza_uploader
-from graph_makers import mean_per_day_maker, mean_week_maker, mean_per_pizza_gembloux, mean_per_pizza_hsp
+from graph_makers import mean_per_day_maker, mean_month_maker, mean_per_pizza_gembloux, mean_per_pizza_hsp, per_pizza_all_time
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -30,10 +30,11 @@ CONTENT_STYLE = {
 }
 
 def get_visuals():
-    visuals = [{'label': 'Moyenne par semaine', 'value': 'mean_week'},
+    visuals = [{'label': 'Moyenne par mois', 'value': 'mean_month'},
                {'label': 'Moyenne par jours', 'value': 'mean_per_day'},
                {'label': 'Moyenne par pizzas Gembloux', 'value': 'mean_per_pizza_gembloux'},
-               {'label': 'Moyenne par pizzas HSP', 'value': 'mean_per_pizza_hsp'}]
+               {'label': 'Moyenne par pizzas HSP', 'value': 'mean_per_pizza_hsp'},
+               {'label': 'Total Global par pizza', 'value': 'all_time'}]
     return visuals
 
 sidebar = html.Div(
@@ -62,7 +63,7 @@ sidebar = html.Div(
 )
 
 content = html.Div(
-    [dcc.Graph(id='graphs')]
+    [html.Div(id="graphs")]
     , style=CONTENT_STYLE)
 
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
@@ -76,17 +77,19 @@ def upload_pizza_file(file_content, filename):
     return file_pizza_uploader(file_content, filename)
 
 # Callback for graphs
-@app.callback(Output('graphs', 'figure'), [Input('visualselector', 'value')])
+@app.callback(Output('graphs', 'children'), [Input('visualselector', 'value')])
 def graph_maker(representation):
-    if representation == 'mean_week':
-        return mean_week_maker()
+    if representation == 'mean_month':
+        return mean_month_maker()
     elif representation == 'mean_per_day':
         return mean_per_day_maker()
     elif representation == 'mean_per_pizza_gembloux':
         return mean_per_pizza_gembloux()
+    elif representation == 'all_time':
+        return per_pizza_all_time()
     else:
         return mean_per_pizza_hsp()
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True)

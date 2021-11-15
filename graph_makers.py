@@ -1,9 +1,38 @@
 import pandas as pd
 import plotly.graph_objects as go
+from dash import dcc
 from datetime import datetime
 
 
-def mean_week_maker():
+def per_pizza_all_time():
+    df = pd.read_csv('./data/user_pizzas.csv')
+    total_global = 0
+    total = {}
+
+    pizzas = ['Merguez', 'Transalpine', 'Chèvre Miel', 'Reine', '3 Fromages', 'Marguerita', 'Poulet oignons',
+              'Légumes grillés']
+
+    for pizza in pizzas:
+        total[pizza] = 0
+
+    for index, row in df.iterrows():
+        if 'Sélection' in row['Distributeur']:
+            for pizza in pizzas:
+                total_global = total_global + row[pizza]
+                total[pizza] = total[pizza] + row[pizza]
+
+    fig = go.Figure(data=[go.Pie(labels=list(total.keys()), values=list(total.values()))])
+
+    title = "% de vente par sorte de pizza (2 distributeurs assemblés) <br><b>Total Global:</b> " + str(total_global)
+    fig.update_layout(
+        title=title,
+        height=650
+    )
+
+    return dcc.Graph(figure=fig)
+
+
+def mean_month_maker():
     df = pd.read_csv('./data/user_pizzas.csv')
     total_hsp = []
     total_gembloux = []
@@ -15,7 +44,9 @@ def mean_week_maker():
     for index, row in df.iterrows():
         date = datetime.strptime(row['Date'], '%d/%m/%Y')
 
-        if date.weekday() == 0:
+        if date.day == 1:
+            # print("first day of the month")
+            # It is the first day of the month
             total_hsp.append(temp_hsp)
             total_gembloux.append(temp_gembloux)
             total.append(temp_total)
@@ -37,13 +68,13 @@ def mean_week_maker():
 
     fig = go.Figure([go.Bar(x=distribs, y=[avg_hsp, avg_gembloux, avg_total])])
     fig.update_layout(
-        title="Moyenne du nombre de pizzas vendues par semaine",
+        title="Moyenne du nombre de pizzas vendues par mois",
         xaxis_title="Distributeurs",
         yaxis_title="Moyenne",
         height=650
     )
 
-    return fig
+    return dcc.Graph(figure=fig)
 
 
 def mean_per_day_maker():
@@ -92,7 +123,8 @@ def mean_per_day_maker():
         height=650
     )
 
-    return fig
+    return dcc.Graph(figure=fig)
+
 
 def mean_per_pizza_gembloux():
     df = pd.read_csv('./data/user_pizzas.csv')
@@ -166,7 +198,8 @@ def mean_per_pizza_gembloux():
         height=650
     )
 
-    return fig
+    return dcc.Graph(figure=fig)
+
 
 def mean_per_pizza_hsp():
     df = pd.read_csv('./data/user_pizzas.csv')
@@ -240,4 +273,4 @@ def mean_per_pizza_hsp():
         height=650
     )
 
-    return fig
+    return dcc.Graph(figure=fig)
