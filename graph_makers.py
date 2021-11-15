@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc
@@ -135,66 +137,36 @@ def mean_per_pizza_gembloux():
               'Légumes grillés']
 
     for key in weeks_gembloux.keys():
-        for pizz in pizzas:
-            weeks_gembloux[key][pizz] = []
+        for pizza in pizzas:
+            weeks_gembloux[key][pizza] = []
 
     for index, row in df.iterrows():
         date = datetime.strptime(row['Date'], '%d/%m/%Y')
         day = date.weekday()
 
         if 'Gembloux' in row['Distributeur']:
-            for pizz in pizzas:
-                weeks_gembloux[day][pizz].append(row[pizz])
-
-    mergu = []
-    trans = []
-    chevre = []
-    reine = []
-    fromage = []
-    margu = []
-    poulet = []
-    legumes = []
+            for pizza in pizzas:
+                weeks_gembloux[day][pizza].append(row[pizza])
 
     for key in weeks_gembloux.keys():
-        for idx, pizz in enumerate(pizzas):
-            temp_gem = weeks_gembloux[key][pizz]
+        for idx, pizza in enumerate(pizzas):
+            temp_gem = weeks_gembloux[key][pizza]
             mean_gem = sum(temp_gem) / len(temp_gem)
+            weeks_gembloux[key][pizza] = math.ceil(mean_gem)
 
-            if idx == 0:
-                mergu.append(mean_gem)
-            elif idx == 1:
-                trans.append(mean_gem)
-            elif idx == 2:
-                chevre.append(mean_gem)
-            elif idx == 3:
-                reine.append(mean_gem)
-            elif idx == 4:
-                fromage.append(mean_gem)
-            elif idx == 5:
-                margu.append(mean_gem)
-            elif idx == 6:
-                poulet.append(mean_gem)
-            else:
-                legumes.append(mean_gem)
-
-    days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+    table_temp = pd.DataFrame.from_dict(weeks_gembloux)
+    table = table_temp.rename({0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
+                        axis=1)
 
     fig = go.Figure(data=[
-        go.Bar(name='Marguerita', x=days, y=margu),
-        go.Bar(name='Reine', x=days, y=reine),
-        go.Bar(name='3 Fromages', x=days, y=fromage),
-        go.Bar(name='Chèvre Miel', x=days, y=chevre),
-        go.Bar(name='Légumes Grillés', x=days, y=legumes),
-        go.Bar(name='Merguez', x=days, y=mergu),
-        go.Bar(name='Poulet Oignons', x=days, y=poulet),
-        go.Bar(name='Transalpine', x=days, y=trans)
+        go.Table(
+            header=dict(values=list(table.columns)),
+            cells=dict(values=[table[column] for column in table])
+        )
     ])
 
     fig.update_layout(
-        barmode='stack',
         title="Moyenne du nombre de pizzas vendues par jours",
-        xaxis_title="Journées",
-        yaxis_title="Moyenne",
         height=650
     )
 
@@ -210,66 +182,37 @@ def mean_per_pizza_hsp():
               'Légumes grillés']
 
     for key in weeks_hsp.keys():
-        for pizz in pizzas:
-            weeks_hsp[key][pizz] = []
+        for pizza in pizzas:
+            weeks_hsp[key][pizza] = []
 
     for index, row in df.iterrows():
         date = datetime.strptime(row['Date'], '%d/%m/%Y')
         day = date.weekday()
 
         if 'Haine' in row['Distributeur']:
-            for pizz in pizzas:
-                weeks_hsp[day][pizz].append(row[pizz])
-
-    mergu = []
-    trans = []
-    chevre = []
-    reine = []
-    fromage = []
-    margu = []
-    poulet = []
-    legumes = []
+            for pizza in pizzas:
+                weeks_hsp[day][pizza].append(row[pizza])
 
     for key in weeks_hsp.keys():
-        for idx, pizz in enumerate(pizzas):
-            temp_hsp = weeks_hsp[key][pizz]
+        for idx, pizza in enumerate(pizzas):
+            temp_hsp = weeks_hsp[key][pizza]
             mean_hsp = sum(temp_hsp) / len(temp_hsp)
+            weeks_hsp[key][pizza] = math.ceil(mean_hsp)
 
-            if idx == 0:
-                mergu.append(mean_hsp)
-            elif idx == 1:
-                trans.append(mean_hsp)
-            elif idx == 2:
-                chevre.append(mean_hsp)
-            elif idx == 3:
-                reine.append(mean_hsp)
-            elif idx == 4:
-                fromage.append(mean_hsp)
-            elif idx == 5:
-                margu.append(mean_hsp)
-            elif idx == 6:
-                poulet.append(mean_hsp)
-            else:
-                legumes.append(mean_hsp)
-
-    days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+    table_temp = pd.DataFrame.from_dict(weeks_hsp)
+    table = table_temp.rename(
+        {0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
+        axis=1)
 
     fig = go.Figure(data=[
-        go.Bar(name='Marguerita', x=days, y=margu),
-        go.Bar(name='Reine', x=days, y=reine),
-        go.Bar(name='3 Fromages', x=days, y=fromage),
-        go.Bar(name='Chèvre Miel', x=days, y=chevre),
-        go.Bar(name='Légumes Grillés', x=days, y=legumes),
-        go.Bar(name='Merguez', x=days, y=mergu),
-        go.Bar(name='Poulet Oignons', x=days, y=poulet),
-        go.Bar(name='Transalpine', x=days, y=trans)
+        go.Table(
+            header=dict(values=list(table.columns)),
+            cells=dict(values=[table[column] for column in table])
+        )
     ])
 
     fig.update_layout(
-        barmode='stack',
         title="Moyenne du nombre de pizzas vendues par jours",
-        xaxis_title="Journées",
-        yaxis_title="Moyenne",
         height=650
     )
 
