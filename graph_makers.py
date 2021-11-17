@@ -155,11 +155,19 @@ def mean_per_pizza_gembloux():
             weeks_gembloux[key][pizza] = math.ceil(mean_gem)
 
     table = pd.DataFrame.from_dict(weeks_gembloux)
+
+    sub_totals = []
+    for col in table:
+        sub_totals.append(sum(table[col]))
+
+    table.loc[len(table.index)] = sub_totals
+
     table = table.reset_index()
     table = table.rename(
         {"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi",
          6: "Dimanche"},
         axis=1)
+    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> Total Journalier"
 
     fig = go.Figure(data=[
         go.Table(
@@ -204,10 +212,18 @@ def mean_per_pizza_hsp():
             weeks_hsp[key][pizza] = math.ceil(mean_hsp)
 
     table = pd.DataFrame.from_dict(weeks_hsp)
+
+    sub_totals = []
+    for col in table:
+        sub_totals.append(sum(table[col]))
+
+    table.loc[len(table.index)] = sub_totals
+
     table = table.reset_index()
     table = table.rename(
         {"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
         axis=1)
+    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> Total Journalier"
 
     fig = go.Figure(data=[
         go.Table(

@@ -30,8 +30,15 @@ if __name__ == '__main__':
             weeks_gembloux[key][pizza] = math.ceil(mean_gem)
 
     test = pd.DataFrame.from_dict(weeks_gembloux)
+
+    sub_totals = []
+    for col in test:
+        sub_totals.append(sum(test[col]))
+
+    test.loc[len(test.index)] = sub_totals
+
     test = test.reset_index()
     test = test.rename({"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
                        axis=1)
 
-    print(test.columns)
+    print(test)
