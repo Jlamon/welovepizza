@@ -47,8 +47,6 @@ def mean_month_maker():
         date = datetime.strptime(row['Date'], '%d/%m/%Y')
 
         if date.day == 1:
-            # print("first day of the month")
-            # It is the first day of the month
             total_hsp.append(temp_hsp)
             total_gembloux.append(temp_gembloux)
             total.append(temp_total)
@@ -160,14 +158,36 @@ def mean_per_pizza_gembloux():
     for col in table:
         sub_totals.append(sum(table[col]))
 
+    sub_percentage = []
+    for el in sub_totals:
+        percentage = str(round((el / sum(sub_totals)) * 100, 2)) + " %"
+        sub_percentage.append(percentage)
+
     table.loc[len(table.index)] = sub_totals
+    table.loc[len(table.index)] = sub_percentage
 
     table = table.reset_index()
     table = table.rename(
         {"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi",
          6: "Dimanche"},
         axis=1)
-    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> Total Journalier"
+    table.loc[len(table.index) - 2, 'Pizzas'] = "<b> Total Journalier"
+    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> % Journalier"
+
+    column_list = list(table)
+    column_list.remove('Pizzas')
+
+    table["Total/Pizza"] = table[column_list].sum(axis=1)
+    table.loc[len(table.index) - 1, 'Total/Pizza'] = ""
+
+    sub_percentage_pizza = []
+    last_col = list(table["Total/Pizza"])[:-2]
+    for el in last_col:
+        percentage = str(round((el / sum(last_col)) * 100, 2)) + " %"
+        sub_percentage_pizza.append(percentage)
+    sub_percentage_pizza.append("")
+    sub_percentage_pizza.append("")
+    table["%/Pizza"] = sub_percentage_pizza
 
     fig = go.Figure(data=[
         go.Table(
@@ -217,13 +237,35 @@ def mean_per_pizza_hsp():
     for col in table:
         sub_totals.append(sum(table[col]))
 
+    sub_percentage = []
+    for el in sub_totals:
+        percentage = str(round((el / sum(sub_totals)) * 100, 2)) + " %"
+        sub_percentage.append(percentage)
+
     table.loc[len(table.index)] = sub_totals
+    table.loc[len(table.index)] = sub_percentage
 
     table = table.reset_index()
     table = table.rename(
         {"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
         axis=1)
-    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> Total Journalier"
+    table.loc[len(table.index) - 2, 'Pizzas'] = "<b> Total Journalier"
+    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> % Journalier"
+
+    column_list = list(table)
+    column_list.remove('Pizzas')
+
+    table["Total/Pizza"] = table[column_list].sum(axis=1)
+    table.loc[len(table.index) - 1, 'Total/Pizza'] = ""
+
+    sub_percentage_pizza = []
+    last_col = list(table["Total/Pizza"])[:-2]
+    for el in last_col:
+        percentage = str(round((el / sum(last_col)) * 100, 2)) + " %"
+        sub_percentage_pizza.append(percentage)
+    sub_percentage_pizza.append("")
+    sub_percentage_pizza.append("")
+    table["%/Pizza"] = sub_percentage_pizza
 
     fig = go.Figure(data=[
         go.Table(

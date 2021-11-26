@@ -29,16 +29,37 @@ if __name__ == '__main__':
             mean_gem = sum(temp_gem) / len(temp_gem)
             weeks_gembloux[key][pizza] = math.ceil(mean_gem)
 
-    test = pd.DataFrame.from_dict(weeks_gembloux)
+    table = pd.DataFrame.from_dict(weeks_gembloux)
 
     sub_totals = []
-    for col in test:
-        sub_totals.append(sum(test[col]))
+    for col in table:
+        sub_totals.append(sum(table[col]))
 
-    test.loc[len(test.index)] = sub_totals
+    sub_percentage = []
+    for el in sub_totals:
+        sub_percentage.append(round((el / sum(sub_totals)) * 100, 2))
 
-    test = test.reset_index()
-    test = test.rename({"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
+    table.loc[len(table.index)] = sub_totals
+    table.loc[len(table.index)] = sub_percentage
+
+    table = table.reset_index()
+    table = table.rename({"index": "Pizzas", 0: "Lundi", 1: "Mardi", 2: "Mercredi", 3: "Jeudi", 4: "Vendredi", 5: "Samedi", 6: "Dimanche"},
                        axis=1)
+    table.loc[len(table.index) - 2, 'Pizzas'] = "<b> Total Journalier"
+    table.loc[len(table.index) - 1, 'Pizzas'] = "<b> % Journalier"
 
-    print(test)
+    column_list = list(table)
+    column_list.remove('Pizzas')
+
+    table["Total/Pizza"] = table[column_list].sum(axis=1)
+    table.loc[len(table.index) - 1, 'Total/Pizza'] = ""
+
+    sub_percentage_pizza = []
+    last_col = list(table["Total/Pizza"])[:-2]
+    for el in last_col:
+        sub_percentage_pizza.append(round((el / sum(last_col)) * 100, 2))
+    sub_percentage_pizza.append("")
+    sub_percentage_pizza.append("")
+    table["%/Pizza"] = sub_percentage_pizza
+
+    print(table)
